@@ -14,7 +14,7 @@ function createFeatures(earthquakeData) {
   // Give each feature a popup describing the place and time of the earthquake
   function onEachFeature(feature, layer) {
     layer.bindPopup("<h3>" + feature.properties.place +
-      "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
+      "</h3><hr><p> Depth: " + (feature.geometry.coordinates[2]) + "<br>Magnitude: " + feature.properties.mag + "</p>");
   }
 
   // Create a GeoJSON layer containing the features array on the earthquakeData object
@@ -45,7 +45,7 @@ function createMap(earthquakes) {
     center: [
       40, -100
     ],
-    zoom: 4,
+    zoom: 5,
     layers: [streetmap, earthquakes]
   });
 
