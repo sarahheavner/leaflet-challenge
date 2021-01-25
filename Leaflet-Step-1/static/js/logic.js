@@ -1,17 +1,18 @@
-// Store our API endpoint inside queryUrl
+//store API URL 
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
-// Perform a GET request to the query URL
+//perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
+  //log results in console
   console.log(data.features)
-  // Once we get a response, send the data.features object to the createFeatures function
+  //once we get a response, send the data.features object to the createFeatures function
   createFeatures(data.features);
 });
 
 function createFeatures(earthquakeData) {
 
-  // Define a function we want to run once for each feature in the features array
-  //Give each feature a popup describing the place, magnitude and depth of earthquake
+  //define a function we want to run once for each feature in the features array
+  //give each feature a popup describing the place, magnitude and depth of earthquake
   function onEachFeature(feature, layer) {
     layer.bindPopup("<h3>" + feature.properties.place +
       "</h3><hr><p> Depth: " + (feature.geometry.coordinates[2]) + "<br>Magnitude: " + feature.properties.mag + "</p>");
@@ -20,7 +21,7 @@ function createFeatures(earthquakeData) {
 
   //function for markersize based on earthquake magnitude
   function markerSize(mag) {
-    return mag * 10000
+    return mag * 15000
   }
 
   //function for marker color based on earthquake depth
@@ -46,8 +47,8 @@ function createFeatures(earthquakeData) {
 
   }
   
-  //Create a GeoJSON layer containing the features array on the earthquakeData object
-  //Run the onEachFeature function once for each piece of data in the array
+  //create a GeoJSON layer containing the features array on the earthquakeData object
+  //return circle where radius is based on magnitude and circle color is based on depth
   var earthquakes = L.geoJSON(earthquakeData, {
     pointToLayer: function(earthquakeData, latlng) {
       return L.circle(latlng, {
@@ -87,4 +88,34 @@ function createMap(earthquakes) {
   });
 
 
+  function getColor(d) {
+    return d > 90   ? '#ff0000' :
+           d > 70   ? '#ff884d' :
+           d > 50   ? '#ff9900' :
+           d > 30   ? '#ffff33' :
+           d > 10   ? '#ccff66' :
+                      '#47d147' ;
+  }
+
+  var legend = L.control({position: 'bottomright'});
+
+  legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        eqDepth = [-10, 10, 30, 50, 70, 90]
+        labels = [];
+
+    for (var i = 0; i < eqDepth.length; i++) {
+        div.innerHTML +=
+           '<i style="background:' + getColor(eqDepth[i] + 1) + '"></i> ' +
+           eqDepth[i] + (eqDepth[i + 1] ? '&ndash;' + eqDepth[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+  };
+
+  legend.addTo(myMap);
 }
+
+
+
