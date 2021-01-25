@@ -27,16 +27,16 @@ function createFeatures(earthquakeData) {
   //function for marker color based on earthquake depth
   function markerColor(depth) {
     if (depth < 10) {
-      return "#47d147"
+      return "#1aff1a"
     }
     else if (depth < 30) {
-      return "#ccff66"
+      return "#8cff1a"
     }
     else if (depth < 50) {
-      return "#ffff33"
+      return "#ffa500"
     }
     else if (depth < 70) {
-      return "#ff9900"
+      return "#ff661a"
     }
     else if (depth < 90) {
       return "#ff884d"
@@ -53,7 +53,9 @@ function createFeatures(earthquakeData) {
     pointToLayer: function(earthquakeData, latlng) {
       return L.circle(latlng, {
         radius: markerSize(earthquakeData.properties.mag),
-        color: markerColor(earthquakeData.geometry.coordinates[2]),
+        fillColor: markerColor(earthquakeData.geometry.coordinates[2]),
+        color: "#000",
+        weight: 0.5,
         fillOpacity: 1
       });
     },
@@ -87,28 +89,29 @@ function createMap(earthquakes) {
     layers: [streetmap, earthquakes]
   });
 
-
+  //create function for legend color ranges
   function getColor(d) {
     return d > 90   ? '#ff0000' :
-           d > 70   ? '#ff884d' :
-           d > 50   ? '#ff9900' :
-           d > 30   ? '#ffff33' :
-           d > 10   ? '#ccff66' :
-                      '#47d147' ;
+           d > 70   ? '#ff661a' :
+           d > 50   ? '#ffa500' :
+           d > 30   ? '#ffff00' :
+           d > 10   ? '#8cff1a' :
+                      '#1aff1a' ;
   }
 
+  //add legend to map
   var legend = L.control({position: 'bottomright'});
 
   legend.onAdd = function (map) {
 
     var div = L.DomUtil.create('div', 'info legend'),
-        eqDepth = [-10, 10, 30, 50, 70, 90]
+        depth = [-10, 10, 30, 50, 70, 90]
         labels = [];
 
-    for (var i = 0; i < eqDepth.length; i++) {
+    for (var i = 0; i < depth.length; i++) {
         div.innerHTML +=
-           '<i style="background:' + getColor(eqDepth[i] + 1) + '"></i> ' +
-           eqDepth[i] + (eqDepth[i + 1] ? '&ndash;' + eqDepth[i + 1] + '<br>' : '+');
+           '<i style="background:' + getColor(depth[i] + 1) + '"></i> ' +
+           depth[i] + (depth[i + 1] ? '&ndash;' + depth[i + 1] + '<br>' : '+');
     }
 
     return div;
